@@ -1,6 +1,6 @@
 package com.example.publicis.assignment.runner;
 
-import com.example.publicis.assignment.service.UserService;
+import com.example.publicis.assignment.interfaces.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 

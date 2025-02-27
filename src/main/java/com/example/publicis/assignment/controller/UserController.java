@@ -1,38 +1,39 @@
 package com.example.publicis.assignment.controller;
 
-import com.example.publicis.assignment.model.User;
-import com.example.publicis.assignment.service.UserService;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
+import com.example.publicis.assignment.interfaces.IUserController;
+import com.example.publicis.assignment.dto.UserResponse;
+import com.example.publicis.assignment.interfaces.UserService;
+import com.example.publicis.assignment.mapper.UserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping("/api/users")
-@Validated
-public class UserController {
+@Controller
+public class UserController implements IUserController {
 
-    private final UserService userService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private UserMapper userMapper;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    @Override
+    public ResponseEntity<UserResponse> getUserById(Long id) {
+        return ResponseEntity.ok(userMapper.toUserResponse(userService.getUserById(id)));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUserById(id));
+    @Override
+    public ResponseEntity<UserResponse> getUserByEmail(String email) {
+        return ResponseEntity.ok(userMapper.toUserResponse(userService.getUserByEmail(email)));
     }
 
-    @GetMapping("/email")
-    public ResponseEntity<User> getUserByEmail(@RequestParam("email") @Email(message = "Invalid email format.") String email) {
-        return ResponseEntity.ok(userService.getUserByEmail(email));
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<User>> searchUsers(@RequestParam("keyword") String keyword) {
-        return ResponseEntity.ok(userService.searchUsers(keyword));
+    @Override
+    public ResponseEntity<List<UserResponse>> searchUsers(String keyword) {
+        return ResponseEntity.ok(userService.searchUsers(keyword).
+                stream()
+                .map(userMapper::toUserResponse)
+                .collect(Collectors.toList()));
     }
 }

@@ -1,4 +1,4 @@
-package com.example.publicis.assignment.service;
+package com.example.publicis.assignment.interfaces;
 
 import com.example.publicis.assignment.model.User;
 

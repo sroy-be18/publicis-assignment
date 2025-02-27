@@ -1,13 +1,13 @@
 package com.example.publicis.assignment.service;
 
 import com.example.publicis.assignment.exception.UserNotFoundException;
+import com.example.publicis.assignment.interfaces.UserService;
 import com.example.publicis.assignment.model.User;
 import com.example.publicis.assignment.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.EntityManager;
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.mapper.orm.session.SearchSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
@@ -18,25 +18,30 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    RestTemplate restTemplate;
-    @Autowired
-    EntityManager entityManager;
+    private final UserRepository userRepository;
+    private final RestTemplate restTemplate;
+    private final EntityManager entityManager;
+    private final String dummyJsonUrl;
 
-    @Value("${dummy.json.url}")
-    String dummyJsonUrl;
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    @Override
+    public UserServiceImpl(UserRepository userRepository, RestTemplate restTemplate, EntityManager entityManager, @Value("${dummy.json.url}") String dummyJsonUrl) {
+        this.userRepository = userRepository;
+        this.restTemplate = restTemplate;
+        this.entityManager = entityManager;
+        this.dummyJsonUrl = dummyJsonUrl;
+    }
+
     @Retry(name = "dummyJsonRetry", fallbackMethod = "fallbackLoadUsers")
     public void loadUsersFromExternalApi() {
         if (userRepository.count() > 0) {
-            System.out.println("Users already loaded. Skipping external API call.");
+            logger.info("Users already loaded. Skipping external API call.");
             return;
         }
 
@@ -44,7 +49,8 @@ public class UserServiceImpl implements UserService{
             ResponseEntity<JsonNode> response = restTemplate.getForEntity(dummyJsonUrl, JsonNode.class);
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                JsonNode usersArray = response.getBody().get("users");
+                JsonNode responseBody = response.getBody();
+                JsonNode usersArray = responseBody.get("users");
                 List<User> users = new ArrayList<>();
 
                 for (JsonNode node : usersArray) {
@@ -66,18 +72,17 @@ public class UserServiceImpl implements UserService{
                 SearchSession searchSession = Search.session(entityManager);
                 searchSession.massIndexer(User.class).startAndWait();
 
-                System.out.println("Users successfully loaded and indexed.");
+                logger.info("Users successfully loaded and indexed.");
             } else {
                 throw new RestClientException("Failed to fetch users: " + response.getStatusCode());
             }
-
         } catch (Exception e) {
             throw new RuntimeException("Error while fetching users from external API.", e);
         }
     }
 
     public void fallbackLoadUsers(Throwable exception) {
-        System.err.println("Fallback: Could not load users from DummyJSON. Reason: " + exception.getMessage());
+        logger.error("Fallback: Could not load users from DummyJSON. Reason: {}", exception.getMessage());
     }
 
 

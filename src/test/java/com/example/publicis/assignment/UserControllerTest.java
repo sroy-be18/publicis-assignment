@@ -4,7 +4,7 @@ import com.example.publicis.assignment.controller.UserController;
 import com.example.publicis.assignment.exception.GlobalExceptionHandler;
 import com.example.publicis.assignment.exception.UserNotFoundException;
 import com.example.publicis.assignment.model.User;
-import com.example.publicis.assignment.service.UserService;
+import com.example.publicis.assignment.interfaces.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
