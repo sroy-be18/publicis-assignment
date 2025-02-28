@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: UserResponse API Backend
+  title: User API Backend
   description: API documentation for managing UserResponses, including fetching by ID, email, and performing full-text searches.
   version: 1.0.0
 servers:
