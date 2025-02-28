@@ -30,4 +30,10 @@ public class UserApiResource implements UserApi {
     public ResponseEntity<List<UserResponse>> searchUser(String keyword) {
         return userController.searchUsers(keyword);
     }
+
+    @Override
+    public ResponseEntity<Void> loadUser() {
+        return userController.loadUsersFromExternalApi();
+    }
+
 }

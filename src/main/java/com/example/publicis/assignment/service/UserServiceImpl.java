@@ -47,10 +47,10 @@ public class UserServiceImpl implements UserService {
 
         try {
             ResponseEntity<JsonNode> response = restTemplate.getForEntity(dummyJsonUrl, JsonNode.class);
-
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            if (response.getStatusCode().is2xxSuccessful()) {
                 JsonNode responseBody = response.getBody();
                 JsonNode usersArray = responseBody.get("users");
+                logger.info("Fetched {} users from external API: {}", usersArray.size(), usersArray);
                 List<User> users = new ArrayList<>();
 
                 for (JsonNode node : usersArray) {
@@ -66,8 +66,9 @@ public class UserServiceImpl implements UserService {
                             node.has("ssn") ? node.get("ssn").asText() : "N/A"
                     ));
                 }
-
+                logger.info("Saving users into H2 database..");
                 userRepository.saveAll(users);
+                logger.info("Users successfully saved into H2 database");
 
                 SearchSession searchSession = Search.session(entityManager);
                 searchSession.massIndexer(User.class).startAndWait();

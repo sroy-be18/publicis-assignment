@@ -10,60 +10,64 @@ paths:
     get:
       tags:
         - User
-      summary: Get UserResponse by ID
-      description: Retrieves a UserResponse by their unique ID.
+      summary: Get User by ID
+      description: Retrieves a User by their unique ID.
       operationId: getUserById
       parameters:
         - name: id
           in: path
           required: true
-          description: Unique identifier of the UserResponse.
+          description: Unique identifier of the User.
           schema:
             type: integer
             format: int64
       responses:
         '200':
-          description: UserResponse found
+          description: User found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponse'
         '404':
-          description: UserResponse not found
+          description: User not found
 
   /email:
     get:
       tags:
         - User
-      summary: Get UserResponse by email
-      description: Retrieves a UserResponse by their email address.
+      summary: Get User by email
+      description: Retrieves a User by their email address.
       operationId: getUserByEmail
       parameters:
         - name: email
           in: query
           required: true
-          description: Email address of the UserResponse.
+          description: Email address of the User.
           schema:
             type: string
             format: email
       responses:
         '200':
-          description: UserResponse found
+          description: User found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponse'
         '400':
           description: Invalid email format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidEmailErrorResponse'
         '404':
-          description: UserResponse not found
+          description: User not found
 
   /search:
     get:
       tags:
         - User
-      summary: Search UserResponses
-      description: Performs a full-text search on UserResponses using a keyword.
+      summary: Search User
+      description: Performs a full-text search on User using a keyword.
       operationId: searchUser
       parameters:
         - name: keyword
@@ -82,8 +86,19 @@ paths:
                 items:
                   $ref: '#/components/schemas/UserResponse'
         '404':
-          description: No UserResponses found
-
+          description: No User found
+  /load-users:
+    get:
+      tags:
+        - User
+      summary: Load User
+      description: Load User from external API
+      operationId: loadUser
+      responses:
+        '200':
+          description: Loading successful
+        '503':
+          description: Internal Server Occurs
 components:
   schemas:
     UserResponse:
@@ -119,18 +134,26 @@ components:
         ssn:
           type: string
           example: "123-45-6789"
+
+    InvalidEmailErrorResponse:
+      type: object
+      properties:
+          message:
+            type: string
+            example: "Invalid email format. Please enter a valid email address."
+
   securitySchemes:
     basicAuth:
       type: http
       scheme: basic
 
   responses:
-    UserResponseNotFound:
-      description: UserResponse not found.
+    UserNotFound:
+      description: User not found.
     InvalidEmailFormat:
       description: Invalid email format.
-    NoUserResponsesFound:
-      description: No UserResponses found for the given keyword.
+    NoUserFound:
+      description: No User found for the given keyword.
 
 security:
   - basicAuth: []

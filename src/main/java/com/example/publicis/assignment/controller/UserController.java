@@ -36,4 +36,10 @@ public class UserController implements IUserController {
                 .map(userMapper::toUserResponse)
                 .collect(Collectors.toList()));
     }
+
+    @Override
+    public ResponseEntity<Void> loadUsersFromExternalApi() {
+        userService.loadUsersFromExternalApi();
+        return ResponseEntity.ok().build();
+    }
 }

@@ -11,4 +11,6 @@ public interface IUserController {
     ResponseEntity<UserResponse> getUserByEmail(String email);
 
     ResponseEntity<List<UserResponse>> searchUsers(String keyword);
+
+    ResponseEntity<Void> loadUsersFromExternalApi();
 }

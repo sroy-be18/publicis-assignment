@@ -153,12 +153,9 @@
 					</execution>
 				</executions>
 				<configuration>
-					<mainClass>com.example.publicis.assignment.AssignmentApplication</mainClass>
+
 					<generatorName>spring</generatorName>
 					<inputSpec>${project.basedir}/src/main/resources/api.yaml</inputSpec>
-					<outputDir>${project.build.directory}/generated-sources/openapi</outputDir>
-					<apiPackage>com.example.publicis.assignment.api</apiPackage>
-					<modelPackage>com.example.publicis.assignment.dto</modelPackage>
 					<configOptions>
 						<useJakartaEe>true</useJakartaEe>  <!-- Enforces jakarta annotations -->
 						<skipDefaultInterface>true</skipDefaultInterface>
@@ -167,8 +164,12 @@
 						<dateLibrary>java8</dateLibrary>
 						<useTags>true</useTags>
 						<jakarta>true</jakarta>
+						<mainClass>com.example.publicis.assignment.AssignmentApplication</mainClass>
+						<outputDir>${project.build.directory}/generated-sources/openapi</outputDir>
+						<apiPackage>com.example.publicis.assignment.api</apiPackage>
+						<modelPackage>com.example.publicis.assignment.dto</modelPackage>
 						<additionalProperties>
-							<requestMappingMode>class</requestMappingMode>  <!-- ✅ Adds @RequestMapping("/api/users") to UserApi -->
+							<requestMappingMode>class</requestMappingMode>
 						</additionalProperties>
 					</configOptions>
 				</configuration>
